@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>S3r.io URL Shortener</title>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js"></script>
+    <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ubuntu:regular,bold&subset=Latin">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.10.2/css/all.css" integrity="sha384-rtJEYb85SiYWgfpCr0jn174XgJTn4rptSOQsMroFBPQSGLdOC5IbubP6lJ35qoM9" crossorigin="anonymous">
+    </script>
+</head>
+<body>
+
+
+<div class="fork-me-wrapper">
+    <div class="fork-me">
+        <a class="fork-me-link" href="https://github.com/richarvey/s3redirect">
+            <span class="fork-me-text">Fork Me On Github</span>
+        </a>
+    </div>
+</div>
+	
+<div id="page">
+
+    <div id="header">
+	    <div class="header_wrapper"></div>
+    </div>
+    <section id="soon">
+	    <h1>s3redirect</s3>
+	    <p class="tagline">A #Serverless and #Databaseless URL Shortner</p>
+    
+	    <form action="<API_GATEWAY_URL>" id="urlForm">
+        <input type="text" name="URL" id="URL" placeholder="https://" required="true">
+	<input type="hidden" name="BUCKET" id="BUCKET" value="<BUCKET>" readonly>
+        <input type="submit" id="SUBMIT" value="Submit">
+    </form>
+
+    <!-- the result of the search will be rendered inside this div -->
+    <div id="result"></div>
+    </section>
+
+    <div id="footer">
+	    <p><a href="https://github.com/richarvey/s3redirect"><i class="fab fa-github"></i></a> <a href="https://awscommunity.social/@ric"><i class="fab fa-mastodon"></i></a> <a href="https://www.linkedin.com/in/richarvey/"><i class="fab fa-linkedin-in"></i></a></p> 
+    </div>
+</div>
+
+    <script>
+    document.getElementById('URL').style.height="40px";
+    document.getElementById('URL').style.fontSize="18pt";
+    document.getElementById('SUBMIT').style.fontSize="18pt";
+
+    // Attach a submit handler to the form
+    $( "#urlForm" ).submit(function( event ) {
+
+      var valurl = document.getElementById("URL").value;
+      var pattern = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+      if (pattern.test(valurl)) {
+          // Stop form from submitting normally
+          event.preventDefault();
+
+          // Get some values from elements on the page:
+          var $form = $( this ),
+            bucket = $form.find( "input[name='BUCKET']" ).val(),
+            url = $form.find( "input[name='URL']" ).val(),
+            postURL = $form.attr( "action" );
+ 
+          // Send the data using post
+          var posting = $.post( postURL, { BUCKET: bucket, URL: url } );
+
+          // Put the results in a div
+          posting.done(function( data ) {
+	    console.log(data.UUID);
+            if(data.ERROR == 'true') {
+              alert("Not submitting suspicious URL's");
+            }
+            else {
+              var shortcode = data.UUID;
+				$( "#result" ).empty().append( "<p>Your Short URL is: <a href=https://<URL>/"+shortcode+" target=_blank><URL>/"+shortcode+"</a> <button class=btn data-clipboard-text='<URL>/"+shortcode+"'>Copy URL</button></p>");
+            }
+          });
+	  var clipboard = new ClipboardJS('.btn');
+              clipboard.on('success', function(e) {
+		      alert("Copied URL to clipboard");
+	      });
+          return true;
+      } 
+          alert("Not a valid URL! Did you include http/https?");
+          return false;
+     });
+    </script>
+
+</body>
+</html>
+
